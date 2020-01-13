@@ -7,6 +7,10 @@
     "email": "carljohan.kihl@gmail.com",
     "url": "https://carljohan.me"
   },
+  "repository": "github:caki0915/shopify-storefront-api-typings",
+  "bugs": {
+    "url": "https://github.com/caki0915/shopify-storefront-api-typings/issues"
+  },
   "homepage": "https://github.com/caki0915/shopify-storefront-api-typings",
   "scripts": {
     "start": "node generateSchema.js",
