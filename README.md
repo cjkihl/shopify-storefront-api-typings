@@ -13,7 +13,7 @@ Auto-generated Typescript typings for Shopify Storefront API. Current version in
 ## How to use
 
 1. Install package: `npm i -S shopify-storefront-api-typings`
-2. Import typings in your code. (vscode will find the typings and auto import for you).
+2. Import typings in your code. (vscode should find the typings and auto import for you).
 
 ```js
 import { Checkout } from 'shopify-storefront-api-typings';
@@ -44,7 +44,7 @@ const variant: Partial<ProductVariant> = { title: 'Variant' };
 
 ## Build your own typings
 
-If you want to customise the nameings or the API version you can build your own typings. You need to create a Private app with Storefront API enabled in order to create your own typings.
+If you want to customise the namings or the Storefront API version you can build your own typings. To do that, you need to create a Private app with Storefront API enabled.
 
 1. Clone this repository
 
