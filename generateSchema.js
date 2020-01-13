@@ -11,11 +11,9 @@ const graphQLClient = new GraphQLClient(process.env.STOREFRONT_ENDPOINT, {
 });
 
 graphQLClient.request(introspectionQuery).then(data => {
-  const builded = buildClientSchema(data);
-  console.log(builded);
-  generateTypeScriptTypes(builded, "./index.d.ts", { typePrefix: "" })
+  const build = buildClientSchema(data);
+  generateTypeScriptTypes(build, "./index.d.ts", { typePrefix: "" })
     .then(() => {
-      console.log("DONE");
       process.exit(0);
     })
     .catch(err => {
