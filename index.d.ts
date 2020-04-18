@@ -101,7 +101,7 @@ export interface QueryRoot {
 }
 
 /**
- * The set of valid sort keys for the articles query.
+ * The set of valid sort keys for the Article query.
  */
 export const enum ArticleSortKeys {
   
@@ -492,27 +492,27 @@ export interface PageInfo {
 export const enum CropRegion {
   
   /**
-   * Keep the center of the image
+   * Keep the center of the image.
    */
   CENTER = 'CENTER',
   
   /**
-   * Keep the top of the image
+   * Keep the top of the image.
    */
   TOP = 'TOP',
   
   /**
-   * Keep the bottom of the image
+   * Keep the bottom of the image.
    */
   BOTTOM = 'BOTTOM',
   
   /**
-   * Keep the left of the image
+   * Keep the left of the image.
    */
   LEFT = 'LEFT',
   
   /**
-   * Keep the right of the image
+   * Keep the right of the image.
    */
   RIGHT = 'RIGHT'
 }
@@ -601,8 +601,20 @@ export interface Image {
  * List of supported image content types.
  */
 export const enum ImageContentType {
+  
+  /**
+   * A PNG image.
+   */
   PNG = 'PNG',
+  
+  /**
+   * A JPG image.
+   */
   JPG = 'JPG',
+  
+  /**
+   * A WEBP image.
+   */
   WEBP = 'WEBP'
 }
 
@@ -628,7 +640,7 @@ export interface SEO {
 }
 
 /**
- * The set of valid sort keys for the blogs query.
+ * The set of valid sort keys for the Blog query.
  */
 export const enum BlogSortKeys {
   
@@ -731,7 +743,7 @@ export interface Collection extends Node {
 }
 
 /**
- * The set of valid sort keys for the products query.
+ * The set of valid sort keys for the ProductCollection query.
  */
 export const enum ProductCollectionSortKeys {
   
@@ -820,6 +832,11 @@ export interface Product extends Node, HasMetafields {
    * List of collections a product belongs to.
    */
   collections: CollectionConnection;
+  
+  /**
+   * The compare at price of the product across all variants.
+   */
+  compareAtPriceRange: ProductPriceRange;
   
   /**
    * The date and time when the product was created.
@@ -913,6 +930,11 @@ export interface Product extends Node, HasMetafields {
   title: string;
   
   /**
+   * The total quantity of inventory in stock for this Product.
+   */
+  totalInventory?: number;
+  
+  /**
    * The date and time when the product was last modified.
    */
   updatedAt: DateTime;
@@ -969,6 +991,11 @@ export interface HasMetafieldsNameMap {
 export interface Metafield extends Node {
   
   /**
+   * The date and time when the storefront metafield was created.
+   */
+  createdAt: DateTime;
+  
+  /**
    * The description of a metafield.
    */
   description?: string;
@@ -992,6 +1019,11 @@ export interface Metafield extends Node {
    * The parent object that the metafield belongs to.
    */
   parentResource: MetafieldParentResource;
+  
+  /**
+   * The date and time when the storefront metafield was updated.
+   */
+  updatedAt: DateTime;
   
   /**
    * The value of a metafield.
@@ -1048,6 +1080,11 @@ export interface ProductVariant extends Node, HasMetafields {
   compareAtPriceV2?: MoneyV2;
   
   /**
+   * Whether the product variant is available for sale but currently out of stock.
+   */
+  currentlyNotInStock: boolean;
+  
+  /**
    * Globally unique identifier.
    */
   id: string;
@@ -1092,6 +1129,11 @@ export interface ProductVariant extends Node, HasMetafields {
    * The product object that the product variant belongs to.
    */
   product: Product;
+  
+  /**
+   * The total sellable quantity of the variant for online sales channels.
+   */
+  quantityAvailable?: number;
   
   /**
    * Whether a customer needs to provide a shipping address when placing an order for the product variant.
@@ -2254,7 +2296,23 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the images query.
+   * The price range of the product.
+   */
+  export interface ProductPriceRange {
+    
+    /**
+     * The highest variant's price.
+     */
+    maxVariantPrice: MoneyV2;
+    
+    /**
+     * The lowest variant's price.
+     */
+    minVariantPrice: MoneyV2;
+  }
+  
+  /**
+   * The set of valid sort keys for the ProductImage query.
    */
   export const enum ProductImageSortKeys {
     
@@ -2448,22 +2506,6 @@ export type Money = any;
   }
   
   /**
-   * The price range of the product.
-   */
-  export interface ProductPriceRange {
-    
-    /**
-     * The highest variant's price.
-     */
-    maxVariantPrice: MoneyV2;
-    
-    /**
-     * The lowest variant's price.
-     */
-    minVariantPrice: MoneyV2;
-  }
-  
-  /**
    * Specifies the input fields required for a selected option.
    */
   export interface SelectedOptionInput {
@@ -2480,7 +2522,7 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the variants query.
+   * The set of valid sort keys for the ProductVariant query.
    */
   export const enum ProductVariantSortKeys {
     
@@ -2540,7 +2582,7 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the collections query.
+   * The set of valid sort keys for the Collection query.
    */
   export const enum CollectionSortKeys {
     
@@ -4506,6 +4548,11 @@ export type Money = any;
     title: string;
     
     /**
+     * Unit price of the line item.
+     */
+    unitPrice?: MoneyV2;
+    
+    /**
      * Product variant of the line item.
      */
     variant?: ProductVariant;
@@ -4534,9 +4581,34 @@ export type Money = any;
   export interface Order extends Node {
     
     /**
+     * Represents the reason for the order's cancellation. Returns null if the order wasn't canceled.
+     */
+    cancelReason?: OrderCancelReason;
+    
+    /**
+     * The date and time when the order was canceled. Returns null if the order wasn't canceled.
+     */
+    canceledAt?: DateTime;
+    
+    /**
      * The code of the currency used for the payment.
      */
     currencyCode: CurrencyCode;
+    
+    /**
+     * The subtotal of line items and their discounts, excluding line items that have been removed. Does not contain order-level discounts, shipping costs, or shipping discounts. Taxes are not included unless the order is a taxes-included order.
+     */
+    currentSubtotalPrice: MoneyV2;
+    
+    /**
+     * The total amount of the order, including taxes and discounts, minus amounts for line items that have been removed.
+     */
+    currentTotalPrice: MoneyV2;
+    
+    /**
+     * The total of all taxes applied to the order, excluding taxes for returned line items.
+     */
+    currentTotalTax: MoneyV2;
     
     /**
      * The locale code in which this specific order happened.
@@ -4554,9 +4626,24 @@ export type Money = any;
     discountApplications: DiscountApplicationConnection;
     
     /**
+     * Whether the order has had any edits applied or not.
+     */
+    edited: boolean;
+    
+    /**
      * The customer's email address.
      */
     email?: string;
+    
+    /**
+     * The financial status of the order.
+     */
+    financialStatus?: OrderFinancialStatus;
+    
+    /**
+     * The fulfillment status for the order.
+     */
+    fulfillmentStatus: OrderFulfillmentStatus;
     
     /**
      * Globally unique identifier.
@@ -4579,6 +4666,11 @@ export type Money = any;
      * A unique numeric identifier for the order for use by shop owner and customer.
      */
     orderNumber: number;
+    
+    /**
+     * The total price of the order before any applied edits.
+     */
+    originalTotalPrice: MoneyV2;
     
     /**
      * The customer's phone number for receiving SMS notifications.
@@ -4670,6 +4762,119 @@ export type Money = any;
     totalTaxV2?: MoneyV2;
   }
   
+  /**
+   * Represents the reason for the order's cancellation.
+   */
+  export const enum OrderCancelReason {
+    
+    /**
+     * The customer wanted to cancel the order.
+     */
+    CUSTOMER = 'CUSTOMER',
+    
+    /**
+     * The order was fraudulent.
+     */
+    FRAUD = 'FRAUD',
+    
+    /**
+     * There was insufficient inventory.
+     */
+    INVENTORY = 'INVENTORY',
+    
+    /**
+     * Payment was declined.
+     */
+    DECLINED = 'DECLINED',
+    
+    /**
+     * The order was canceled for an unlisted reason.
+     */
+    OTHER = 'OTHER'
+  }
+  
+  /**
+   * Represents the order's current financial status.
+   */
+  export const enum OrderFinancialStatus {
+    
+    /**
+     * Displayed as **Pending**.
+     */
+    PENDING = 'PENDING',
+    
+    /**
+     * Displayed as **Authorized**.
+     */
+    AUTHORIZED = 'AUTHORIZED',
+    
+    /**
+     * Displayed as **Partially paid**.
+     */
+    PARTIALLY_PAID = 'PARTIALLY_PAID',
+    
+    /**
+     * Displayed as **Partially refunded**.
+     */
+    PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
+    
+    /**
+     * Displayed as **Voided**.
+     */
+    VOIDED = 'VOIDED',
+    
+    /**
+     * Displayed as **Paid**.
+     */
+    PAID = 'PAID',
+    
+    /**
+     * Displayed as **Refunded**.
+     */
+    REFUNDED = 'REFUNDED'
+  }
+  
+  /**
+   * Represents the order's current fulfillment status.
+   */
+  export const enum OrderFulfillmentStatus {
+    
+    /**
+     * Displayed as **Unfulfilled**.
+     */
+    UNFULFILLED = 'UNFULFILLED',
+    
+    /**
+     * Displayed as **Partially fulfilled**.
+     */
+    PARTIALLY_FULFILLED = 'PARTIALLY_FULFILLED',
+    
+    /**
+     * Displayed as **Fulfilled**.
+     */
+    FULFILLED = 'FULFILLED',
+    
+    /**
+     * Displayed as **Restocked**.
+     */
+    RESTOCKED = 'RESTOCKED',
+    
+    /**
+     * Displayed as **Pending fulfillment**.
+     */
+    PENDING_FULFILLMENT = 'PENDING_FULFILLMENT',
+    
+    /**
+     * Displayed as **Open**.
+     */
+    OPEN = 'OPEN',
+    
+    /**
+     * Displayed as **In progress**.
+     */
+    IN_PROGRESS = 'IN_PROGRESS'
+  }
+  
   export interface OrderLineItemConnection {
     
     /**
@@ -4702,6 +4907,11 @@ export type Money = any;
   export interface OrderLineItem {
     
     /**
+     * The number of entries associated to the line item minus the items that have been removed.
+     */
+    currentQuantity: number;
+    
+    /**
      * List of custom attributes associated to the line item.
      */
     customAttributes: Array<Attribute>;
@@ -4710,6 +4920,16 @@ export type Money = any;
      * The discounts that have been allocated onto the order line item by discount applications.
      */
     discountAllocations: Array<DiscountAllocation>;
+    
+    /**
+     * The total price of the line item, including discounts, and displayed in the presentment currency.
+     */
+    discountedTotalPrice: MoneyV2;
+    
+    /**
+     * The total price of the line item, not including any discounts. The total price is calculated using the original unit price multiplied by the quantity, and it is displayed in the presentment currency.
+     */
+    originalTotalPrice: MoneyV2;
     
     /**
      * The number of products variants associated to the line item.
@@ -4809,7 +5029,7 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the orders query.
+   * The set of valid sort keys for the Order query.
    */
   export const enum OrderSortKeys {
     
@@ -4910,7 +5130,7 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the pages query.
+   * The set of valid sort keys for the Page query.
    */
   export const enum PageSortKeys {
     
@@ -4991,7 +5211,7 @@ export type Money = any;
   }
   
   /**
-   * The set of valid sort keys for the products query.
+   * The set of valid sort keys for the Product query.
    */
   export const enum ProductSortKeys {
     
@@ -5373,8 +5593,14 @@ export type Money = any;
     
     /**
      * Completes a checkout with a tokenized payment.
+     * @deprecated Use `checkoutCompleteWithTokenizedPaymentV3` instead
      */
     checkoutCompleteWithTokenizedPaymentV2?: CheckoutCompleteWithTokenizedPaymentV2Payload;
+    
+    /**
+     * Completes a checkout with a tokenized payment.
+     */
+    checkoutCompleteWithTokenizedPaymentV3?: CheckoutCompleteWithTokenizedPaymentV3Payload;
     
     /**
      * Creates a new checkout.
@@ -5499,6 +5725,14 @@ export type Money = any;
     customerAccessTokenCreate?: CustomerAccessTokenCreatePayload;
     
     /**
+     * Creates a customer access token using a multipass token instead of email and password.
+     * A customer record is created if customer does not exist. If a customer record already
+     * exists but the record is disabled, then it's enabled.
+     * 
+     */
+    customerAccessTokenCreateWithMultipass?: CustomerAccessTokenCreateWithMultipassPayload;
+    
+    /**
      * Permanently destroys a customer access token.
      */
     customerAccessTokenDelete?: CustomerAccessTokenDeletePayload;
@@ -5516,6 +5750,11 @@ export type Money = any;
      * Activates a customer.
      */
     customerActivate?: CustomerActivatePayload;
+    
+    /**
+     * Activates a customer with the activation url received from `customerCreate`.
+     */
+    customerActivateByUrl?: CustomerActivateByUrlPayload;
     
     /**
      * Creates a new address for a customer.
@@ -6456,6 +6695,102 @@ export type Money = any;
   }
   
   /**
+   * Specifies the fields required to complete a checkout with
+   * a tokenized payment.
+   * 
+   */
+  export interface TokenizedPaymentInputV3 {
+    
+    /**
+     * The amount and currency of the payment.
+     */
+    paymentAmount: MoneyInput;
+    
+    /**
+     * A unique client generated key used to avoid duplicate charges. When a duplicate payment is found, the original is returned instead of creating a new one.
+     */
+    idempotencyKey: string;
+    
+    /**
+     * The billing address for the payment.
+     */
+    billingAddress: MailingAddressInput;
+    
+    /**
+     * A simple string or JSON containing the required payment data for the tokenized payment.
+     */
+    paymentData: string;
+    
+    /**
+     * Whether to execute the payment in test mode, if possible. Test mode is not supported in production stores. Defaults to `false`.
+     */
+    test?: boolean;
+    
+    /**
+     * Public Hash Key used for AndroidPay payments only.
+     */
+    identifier?: string;
+    
+    /**
+     * The type of payment token.
+     */
+    type: PaymentTokenType;
+  }
+  
+  /**
+   * The valid values for the types of payment token.
+   */
+  export const enum PaymentTokenType {
+    
+    /**
+     * Apple Pay token type.
+     */
+    APPLE_PAY = 'APPLE_PAY',
+    
+    /**
+     * Vault payment token type.
+     */
+    VAULT = 'VAULT',
+    
+    /**
+     * Shopify Pay token type.
+     */
+    SHOPIFY_PAY = 'SHOPIFY_PAY',
+    
+    /**
+     * Google Pay token type.
+     */
+    GOOGLE_PAY = 'GOOGLE_PAY'
+  }
+  
+  /**
+   * Return type for `checkoutCompleteWithTokenizedPaymentV3` mutation.
+   */
+  export interface CheckoutCompleteWithTokenizedPaymentV3Payload {
+    
+    /**
+     * The checkout on which the payment was applied.
+     */
+    checkout?: Checkout;
+    
+    /**
+     * List of errors that occurred executing the mutation.
+     */
+    checkoutUserErrors: Array<CheckoutUserError>;
+    
+    /**
+     * A representation of the attempted payment.
+     */
+    payment?: Payment;
+    
+    /**
+     * List of errors that occurred executing the mutation.
+     * @deprecated Use `checkoutUserErrors` instead
+     */
+    userErrors: Array<UserError>;
+  }
+  
+  /**
    * Specifies the fields required to create a checkout.
    */
   export interface CheckoutCreateInput {
@@ -7152,7 +7487,33 @@ export type Money = any;
     /**
      * Address does not exist.
      */
-    NOT_FOUND = 'NOT_FOUND'
+    NOT_FOUND = 'NOT_FOUND',
+    
+    /**
+     * Input email contains an invalid domain name.
+     */
+    BAD_DOMAIN = 'BAD_DOMAIN',
+    
+    /**
+     * Multipass token is not valid.
+     */
+    INVALID_MULTIPASS_REQUEST = 'INVALID_MULTIPASS_REQUEST'
+  }
+  
+  /**
+   * Return type for `customerAccessTokenCreateWithMultipass` mutation.
+   */
+  export interface CustomerAccessTokenCreateWithMultipassPayload {
+    
+    /**
+     * An access token object associated with the customer.
+     */
+    customerAccessToken?: CustomerAccessToken;
+    
+    /**
+     * List of errors that occurred executing the mutation.
+     */
+    customerUserErrors: Array<CustomerUserError>;
   }
   
   /**
@@ -7233,6 +7594,27 @@ export type Money = any;
      * @deprecated Use `customerUserErrors` instead
      */
     userErrors: Array<UserError>;
+  }
+  
+  /**
+   * Return type for `customerActivateByUrl` mutation.
+   */
+  export interface CustomerActivateByUrlPayload {
+    
+    /**
+     * The customer that was activated.
+     */
+    customer?: Customer;
+    
+    /**
+     * A new customer access token for the customer.
+     */
+    customerAccessToken?: CustomerAccessToken;
+    
+    /**
+     * List of errors that occurred executing the mutation.
+     */
+    customerUserErrors: Array<CustomerUserError>;
   }
   
   /**
@@ -7927,6 +8309,7 @@ export type Money = any;
     UnitPriceMeasurement?: UnitPriceMeasurementTypeResolver;
     CollectionConnection?: CollectionConnectionTypeResolver;
     CollectionEdge?: CollectionEdgeTypeResolver;
+    ProductPriceRange?: ProductPriceRangeTypeResolver;
     ImageConnection?: ImageConnectionTypeResolver;
     ImageEdge?: ImageEdgeTypeResolver;
     MediaConnection?: MediaConnectionTypeResolver;
@@ -7938,7 +8321,6 @@ export type Money = any;
     ProductOption?: ProductOptionTypeResolver;
     ProductPriceRangeConnection?: ProductPriceRangeConnectionTypeResolver;
     ProductPriceRangeEdge?: ProductPriceRangeEdgeTypeResolver;
-    ProductPriceRange?: ProductPriceRangeTypeResolver;
     ProductVariantConnection?: ProductVariantConnectionTypeResolver;
     ProductVariantEdge?: ProductVariantEdgeTypeResolver;
     Customer?: CustomerTypeResolver;
@@ -8003,6 +8385,7 @@ export type Money = any;
     CheckoutCompleteWithCreditCardV2Payload?: CheckoutCompleteWithCreditCardV2PayloadTypeResolver;
     CheckoutCompleteWithTokenizedPaymentPayload?: CheckoutCompleteWithTokenizedPaymentPayloadTypeResolver;
     CheckoutCompleteWithTokenizedPaymentV2Payload?: CheckoutCompleteWithTokenizedPaymentV2PayloadTypeResolver;
+    CheckoutCompleteWithTokenizedPaymentV3Payload?: CheckoutCompleteWithTokenizedPaymentV3PayloadTypeResolver;
     CheckoutCreatePayload?: CheckoutCreatePayloadTypeResolver;
     CheckoutCustomerAssociatePayload?: CheckoutCustomerAssociatePayloadTypeResolver;
     CheckoutCustomerAssociateV2Payload?: CheckoutCustomerAssociateV2PayloadTypeResolver;
@@ -8027,9 +8410,11 @@ export type Money = any;
     CustomerAccessTokenCreatePayload?: CustomerAccessTokenCreatePayloadTypeResolver;
     CustomerAccessToken?: CustomerAccessTokenTypeResolver;
     CustomerUserError?: CustomerUserErrorTypeResolver;
+    CustomerAccessTokenCreateWithMultipassPayload?: CustomerAccessTokenCreateWithMultipassPayloadTypeResolver;
     CustomerAccessTokenDeletePayload?: CustomerAccessTokenDeletePayloadTypeResolver;
     CustomerAccessTokenRenewPayload?: CustomerAccessTokenRenewPayloadTypeResolver;
     CustomerActivatePayload?: CustomerActivatePayloadTypeResolver;
+    CustomerActivateByUrlPayload?: CustomerActivateByUrlPayloadTypeResolver;
     CustomerAddressCreatePayload?: CustomerAddressCreatePayloadTypeResolver;
     CustomerAddressDeletePayload?: CustomerAddressDeletePayloadTypeResolver;
     CustomerAddressUpdatePayload?: CustomerAddressUpdatePayloadTypeResolver;
@@ -8663,6 +9048,7 @@ export type Money = any;
   export interface ProductTypeResolver<TParent = any> {
     availableForSale?: ProductToAvailableForSaleResolver<TParent>;
     collections?: ProductToCollectionsResolver<TParent>;
+    compareAtPriceRange?: ProductToCompareAtPriceRangeResolver<TParent>;
     createdAt?: ProductToCreatedAtResolver<TParent>;
     description?: ProductToDescriptionResolver<TParent>;
     descriptionHtml?: ProductToDescriptionHtmlResolver<TParent>;
@@ -8680,6 +9066,7 @@ export type Money = any;
     publishedAt?: ProductToPublishedAtResolver<TParent>;
     tags?: ProductToTagsResolver<TParent>;
     title?: ProductToTitleResolver<TParent>;
+    totalInventory?: ProductToTotalInventoryResolver<TParent>;
     updatedAt?: ProductToUpdatedAtResolver<TParent>;
     variantBySelectedOptions?: ProductToVariantBySelectedOptionsResolver<TParent>;
     variants?: ProductToVariantsResolver<TParent>;
@@ -8699,6 +9086,10 @@ export type Money = any;
   }
   export interface ProductToCollectionsResolver<TParent = any, TResult = any> {
     (parent: TParent, args: ProductToCollectionsArgs, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface ProductToCompareAtPriceRangeResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
   export interface ProductToCreatedAtResolver<TParent = any, TResult = any> {
@@ -8814,6 +9205,10 @@ export type Money = any;
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface ProductToTotalInventoryResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface ProductToUpdatedAtResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
@@ -8845,13 +9240,19 @@ export type Money = any;
     (parent: TParent, context: any, info: GraphQLResolveInfo): 'Product' | 'ProductVariant';
   }
   export interface MetafieldTypeResolver<TParent = any> {
+    createdAt?: MetafieldToCreatedAtResolver<TParent>;
     description?: MetafieldToDescriptionResolver<TParent>;
     id?: MetafieldToIdResolver<TParent>;
     key?: MetafieldToKeyResolver<TParent>;
     namespace?: MetafieldToNamespaceResolver<TParent>;
     parentResource?: MetafieldToParentResourceResolver<TParent>;
+    updatedAt?: MetafieldToUpdatedAtResolver<TParent>;
     value?: MetafieldToValueResolver<TParent>;
     valueType?: MetafieldToValueTypeResolver<TParent>;
+  }
+  
+  export interface MetafieldToCreatedAtResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
   export interface MetafieldToDescriptionResolver<TParent = any, TResult = any> {
@@ -8874,6 +9275,10 @@ export type Money = any;
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface MetafieldToUpdatedAtResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface MetafieldToValueResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
@@ -8890,6 +9295,7 @@ export type Money = any;
     availableForSale?: ProductVariantToAvailableForSaleResolver<TParent>;
     compareAtPrice?: ProductVariantToCompareAtPriceResolver<TParent>;
     compareAtPriceV2?: ProductVariantToCompareAtPriceV2Resolver<TParent>;
+    currentlyNotInStock?: ProductVariantToCurrentlyNotInStockResolver<TParent>;
     id?: ProductVariantToIdResolver<TParent>;
     image?: ProductVariantToImageResolver<TParent>;
     metafield?: ProductVariantToMetafieldResolver<TParent>;
@@ -8899,6 +9305,7 @@ export type Money = any;
     price?: ProductVariantToPriceResolver<TParent>;
     priceV2?: ProductVariantToPriceV2Resolver<TParent>;
     product?: ProductVariantToProductResolver<TParent>;
+    quantityAvailable?: ProductVariantToQuantityAvailableResolver<TParent>;
     requiresShipping?: ProductVariantToRequiresShippingResolver<TParent>;
     selectedOptions?: ProductVariantToSelectedOptionsResolver<TParent>;
     sku?: ProductVariantToSkuResolver<TParent>;
@@ -8922,6 +9329,10 @@ export type Money = any;
   }
   
   export interface ProductVariantToCompareAtPriceV2Resolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface ProductVariantToCurrentlyNotInStockResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -8992,6 +9403,10 @@ export type Money = any;
   }
   
   export interface ProductVariantToProductResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface ProductVariantToQuantityAvailableResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -9198,6 +9613,19 @@ export type Money = any;
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface ProductPriceRangeTypeResolver<TParent = any> {
+    maxVariantPrice?: ProductPriceRangeToMaxVariantPriceResolver<TParent>;
+    minVariantPrice?: ProductPriceRangeToMinVariantPriceResolver<TParent>;
+  }
+  
+  export interface ProductPriceRangeToMaxVariantPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface ProductPriceRangeToMinVariantPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface ImageConnectionTypeResolver<TParent = any> {
     edges?: ImageConnectionToEdgesResolver<TParent>;
     pageInfo?: ImageConnectionToPageInfoResolver<TParent>;
@@ -9294,19 +9722,6 @@ export type Money = any;
   }
   
   export interface ProductPriceRangeEdgeToNodeResolver<TParent = any, TResult = any> {
-    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
-  }
-  
-  export interface ProductPriceRangeTypeResolver<TParent = any> {
-    maxVariantPrice?: ProductPriceRangeToMaxVariantPriceResolver<TParent>;
-    minVariantPrice?: ProductPriceRangeToMinVariantPriceResolver<TParent>;
-  }
-  
-  export interface ProductPriceRangeToMaxVariantPriceResolver<TParent = any, TResult = any> {
-    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
-  }
-  
-  export interface ProductPriceRangeToMinVariantPriceResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -9889,6 +10304,7 @@ export type Money = any;
     id?: CheckoutLineItemToIdResolver<TParent>;
     quantity?: CheckoutLineItemToQuantityResolver<TParent>;
     title?: CheckoutLineItemToTitleResolver<TParent>;
+    unitPrice?: CheckoutLineItemToUnitPriceResolver<TParent>;
     variant?: CheckoutLineItemToVariantResolver<TParent>;
   }
   
@@ -9912,6 +10328,10 @@ export type Money = any;
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface CheckoutLineItemToUnitPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface CheckoutLineItemToVariantResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
@@ -9930,15 +10350,24 @@ export type Money = any;
   }
   
   export interface OrderTypeResolver<TParent = any> {
+    cancelReason?: OrderToCancelReasonResolver<TParent>;
+    canceledAt?: OrderToCanceledAtResolver<TParent>;
     currencyCode?: OrderToCurrencyCodeResolver<TParent>;
+    currentSubtotalPrice?: OrderToCurrentSubtotalPriceResolver<TParent>;
+    currentTotalPrice?: OrderToCurrentTotalPriceResolver<TParent>;
+    currentTotalTax?: OrderToCurrentTotalTaxResolver<TParent>;
     customerLocale?: OrderToCustomerLocaleResolver<TParent>;
     customerUrl?: OrderToCustomerUrlResolver<TParent>;
     discountApplications?: OrderToDiscountApplicationsResolver<TParent>;
+    edited?: OrderToEditedResolver<TParent>;
     email?: OrderToEmailResolver<TParent>;
+    financialStatus?: OrderToFinancialStatusResolver<TParent>;
+    fulfillmentStatus?: OrderToFulfillmentStatusResolver<TParent>;
     id?: OrderToIdResolver<TParent>;
     lineItems?: OrderToLineItemsResolver<TParent>;
     name?: OrderToNameResolver<TParent>;
     orderNumber?: OrderToOrderNumberResolver<TParent>;
+    originalTotalPrice?: OrderToOriginalTotalPriceResolver<TParent>;
     phone?: OrderToPhoneResolver<TParent>;
     processedAt?: OrderToProcessedAtResolver<TParent>;
     shippingAddress?: OrderToShippingAddressResolver<TParent>;
@@ -9957,7 +10386,27 @@ export type Money = any;
     totalTaxV2?: OrderToTotalTaxV2Resolver<TParent>;
   }
   
+  export interface OrderToCancelReasonResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToCanceledAtResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface OrderToCurrencyCodeResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToCurrentSubtotalPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToCurrentTotalPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToCurrentTotalTaxResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -9980,7 +10429,19 @@ export type Money = any;
     (parent: TParent, args: OrderToDiscountApplicationsArgs, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface OrderToEditedResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface OrderToEmailResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToFinancialStatusResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToFulfillmentStatusResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -10004,6 +10465,10 @@ export type Money = any;
   }
   
   export interface OrderToOrderNumberResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderToOriginalTotalPriceResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -10101,11 +10566,18 @@ export type Money = any;
   }
   
   export interface OrderLineItemTypeResolver<TParent = any> {
+    currentQuantity?: OrderLineItemToCurrentQuantityResolver<TParent>;
     customAttributes?: OrderLineItemToCustomAttributesResolver<TParent>;
     discountAllocations?: OrderLineItemToDiscountAllocationsResolver<TParent>;
+    discountedTotalPrice?: OrderLineItemToDiscountedTotalPriceResolver<TParent>;
+    originalTotalPrice?: OrderLineItemToOriginalTotalPriceResolver<TParent>;
     quantity?: OrderLineItemToQuantityResolver<TParent>;
     title?: OrderLineItemToTitleResolver<TParent>;
     variant?: OrderLineItemToVariantResolver<TParent>;
+  }
+  
+  export interface OrderLineItemToCurrentQuantityResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
   export interface OrderLineItemToCustomAttributesResolver<TParent = any, TResult = any> {
@@ -10113,6 +10585,14 @@ export type Money = any;
   }
   
   export interface OrderLineItemToDiscountAllocationsResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderLineItemToDiscountedTotalPriceResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface OrderLineItemToOriginalTotalPriceResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -10585,6 +11065,7 @@ export type Money = any;
     checkoutCompleteWithCreditCardV2?: MutationToCheckoutCompleteWithCreditCardV2Resolver<TParent>;
     checkoutCompleteWithTokenizedPayment?: MutationToCheckoutCompleteWithTokenizedPaymentResolver<TParent>;
     checkoutCompleteWithTokenizedPaymentV2?: MutationToCheckoutCompleteWithTokenizedPaymentV2Resolver<TParent>;
+    checkoutCompleteWithTokenizedPaymentV3?: MutationToCheckoutCompleteWithTokenizedPaymentV3Resolver<TParent>;
     checkoutCreate?: MutationToCheckoutCreateResolver<TParent>;
     checkoutCustomerAssociate?: MutationToCheckoutCustomerAssociateResolver<TParent>;
     checkoutCustomerAssociateV2?: MutationToCheckoutCustomerAssociateV2Resolver<TParent>;
@@ -10607,9 +11088,11 @@ export type Money = any;
     checkoutShippingAddressUpdateV2?: MutationToCheckoutShippingAddressUpdateV2Resolver<TParent>;
     checkoutShippingLineUpdate?: MutationToCheckoutShippingLineUpdateResolver<TParent>;
     customerAccessTokenCreate?: MutationToCustomerAccessTokenCreateResolver<TParent>;
+    customerAccessTokenCreateWithMultipass?: MutationToCustomerAccessTokenCreateWithMultipassResolver<TParent>;
     customerAccessTokenDelete?: MutationToCustomerAccessTokenDeleteResolver<TParent>;
     customerAccessTokenRenew?: MutationToCustomerAccessTokenRenewResolver<TParent>;
     customerActivate?: MutationToCustomerActivateResolver<TParent>;
+    customerActivateByUrl?: MutationToCustomerActivateByUrlResolver<TParent>;
     customerAddressCreate?: MutationToCustomerAddressCreateResolver<TParent>;
     customerAddressDelete?: MutationToCustomerAddressDeleteResolver<TParent>;
     customerAddressUpdate?: MutationToCustomerAddressUpdateResolver<TParent>;
@@ -10674,6 +11157,14 @@ export type Money = any;
   }
   export interface MutationToCheckoutCompleteWithTokenizedPaymentV2Resolver<TParent = any, TResult = any> {
     (parent: TParent, args: MutationToCheckoutCompleteWithTokenizedPaymentV2Args, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface MutationToCheckoutCompleteWithTokenizedPaymentV3Args {
+    checkoutId: string;
+    payment: TokenizedPaymentInputV3;
+  }
+  export interface MutationToCheckoutCompleteWithTokenizedPaymentV3Resolver<TParent = any, TResult = any> {
+    (parent: TParent, args: MutationToCheckoutCompleteWithTokenizedPaymentV3Args, context: any, info: GraphQLResolveInfo): TResult;
   }
   
   export interface MutationToCheckoutCreateArgs {
@@ -10847,6 +11338,13 @@ export type Money = any;
     (parent: TParent, args: MutationToCustomerAccessTokenCreateArgs, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface MutationToCustomerAccessTokenCreateWithMultipassArgs {
+    multipassToken: string;
+  }
+  export interface MutationToCustomerAccessTokenCreateWithMultipassResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: MutationToCustomerAccessTokenCreateWithMultipassArgs, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface MutationToCustomerAccessTokenDeleteArgs {
     customerAccessToken: string;
   }
@@ -10867,6 +11365,14 @@ export type Money = any;
   }
   export interface MutationToCustomerActivateResolver<TParent = any, TResult = any> {
     (parent: TParent, args: MutationToCustomerActivateArgs, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface MutationToCustomerActivateByUrlArgs {
+    activationUrl: URL;
+    password: string;
+  }
+  export interface MutationToCustomerActivateByUrlResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: MutationToCustomerActivateByUrlArgs, context: any, info: GraphQLResolveInfo): TResult;
   }
   
   export interface MutationToCustomerAddressCreateArgs {
@@ -11256,6 +11762,29 @@ export type Money = any;
   }
   
   export interface CheckoutCompleteWithTokenizedPaymentV2PayloadToUserErrorsResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CheckoutCompleteWithTokenizedPaymentV3PayloadTypeResolver<TParent = any> {
+    checkout?: CheckoutCompleteWithTokenizedPaymentV3PayloadToCheckoutResolver<TParent>;
+    checkoutUserErrors?: CheckoutCompleteWithTokenizedPaymentV3PayloadToCheckoutUserErrorsResolver<TParent>;
+    payment?: CheckoutCompleteWithTokenizedPaymentV3PayloadToPaymentResolver<TParent>;
+    userErrors?: CheckoutCompleteWithTokenizedPaymentV3PayloadToUserErrorsResolver<TParent>;
+  }
+  
+  export interface CheckoutCompleteWithTokenizedPaymentV3PayloadToCheckoutResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CheckoutCompleteWithTokenizedPaymentV3PayloadToCheckoutUserErrorsResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CheckoutCompleteWithTokenizedPaymentV3PayloadToPaymentResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CheckoutCompleteWithTokenizedPaymentV3PayloadToUserErrorsResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
@@ -11686,6 +12215,19 @@ export type Money = any;
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
+  export interface CustomerAccessTokenCreateWithMultipassPayloadTypeResolver<TParent = any> {
+    customerAccessToken?: CustomerAccessTokenCreateWithMultipassPayloadToCustomerAccessTokenResolver<TParent>;
+    customerUserErrors?: CustomerAccessTokenCreateWithMultipassPayloadToCustomerUserErrorsResolver<TParent>;
+  }
+  
+  export interface CustomerAccessTokenCreateWithMultipassPayloadToCustomerAccessTokenResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CustomerAccessTokenCreateWithMultipassPayloadToCustomerUserErrorsResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
   export interface CustomerAccessTokenDeletePayloadTypeResolver<TParent = any> {
     deletedAccessToken?: CustomerAccessTokenDeletePayloadToDeletedAccessTokenResolver<TParent>;
     deletedCustomerAccessTokenId?: CustomerAccessTokenDeletePayloadToDeletedCustomerAccessTokenIdResolver<TParent>;
@@ -11737,6 +12279,24 @@ export type Money = any;
   }
   
   export interface CustomerActivatePayloadToUserErrorsResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CustomerActivateByUrlPayloadTypeResolver<TParent = any> {
+    customer?: CustomerActivateByUrlPayloadToCustomerResolver<TParent>;
+    customerAccessToken?: CustomerActivateByUrlPayloadToCustomerAccessTokenResolver<TParent>;
+    customerUserErrors?: CustomerActivateByUrlPayloadToCustomerUserErrorsResolver<TParent>;
+  }
+  
+  export interface CustomerActivateByUrlPayloadToCustomerResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CustomerActivateByUrlPayloadToCustomerAccessTokenResolver<TParent = any, TResult = any> {
+    (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
+  }
+  
+  export interface CustomerActivateByUrlPayloadToCustomerUserErrorsResolver<TParent = any, TResult = any> {
     (parent: TParent, args: {}, context: any, info: GraphQLResolveInfo): TResult;
   }
   
