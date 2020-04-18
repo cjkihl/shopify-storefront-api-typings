@@ -6,7 +6,7 @@
 
 ## Overview
 
-Auto-generated Typescript typings for Shopify Storefront API. Current version includes all types for version: `2020-01`.
+Auto-generated Typescript typings for Shopify Storefront API. Current version includes all types for version: `2020-04`.
 
 ![types](https://user-images.githubusercontent.com/1438153/72280575-eb2ec200-3638-11ea-9609-4196400219f5.jpg)
 
@@ -16,7 +16,7 @@ Auto-generated Typescript typings for Shopify Storefront API. Current version in
 2. Import typings in your code. (vscode should find the typings and auto import for you).
 
 ```js
-import { Checkout } from 'shopify-storefront-api-typings';
+import { Checkout } from "shopify-storefront-api-typings";
 ```
 
 Here is how you can get strongly typed queries with apollo:
@@ -39,7 +39,7 @@ const { data } = useQuery<{ checkout: Checkout }>(QUERY_CHECKOUT);
 Use the `Partial<>` utility if you want to create subsets of the type without getting type errors.
 
 ```js
-const variant: Partial<ProductVariant> = { title: 'Variant' };
+const variant: Partial<ProductVariant> = { title: "Variant" };
 ```
 
 ## Build your own typings
