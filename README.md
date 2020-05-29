@@ -6,7 +6,9 @@
 
 ## Overview
 
-Auto-generated Typescript typings for Shopify Storefront API. Current version includes all types for version: `2020-04`.
+Auto-generated Typescript type definitions for **Shopify Storefront API**. Current version includes all types for version: `2020-04`.
+
+If you're looking for typings for **Shopify Admin API**, checkout the [shopify-admin-api-typings](https://www.npmjs.com/package/shopify-admin-api-typings) package.
 
 ![types](https://user-images.githubusercontent.com/1438153/72280575-eb2ec200-3638-11ea-9609-4196400219f5.jpg)
 
