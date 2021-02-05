@@ -269,7 +269,7 @@ export interface Node {
   id: string;
 
   /**
-   * GraphQL name of 
+   * GraphQL name of entity
    */
   __typename: PossibleNodeTypeNames;
 }
