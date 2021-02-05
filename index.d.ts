@@ -267,6 +267,11 @@ export interface Node {
    * Globally unique identifier.
    */
   id: string;
+
+  /**
+   * GraphQL name of 
+   */
+  __typename: PossibleNodeTypeNames;
 }
 
 /** Use this to resolve interface type Node */
